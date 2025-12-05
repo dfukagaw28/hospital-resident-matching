@@ -14,7 +14,8 @@
   },
 
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "bun test"
   },
 
   "devDependencies": {
