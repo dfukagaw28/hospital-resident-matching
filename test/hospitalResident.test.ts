@@ -64,3 +64,16 @@ test("HospitalResident generates deterministic preferences and correct capacitie
   // capacities
   expect(hr.capacities).toEqual([3, 3, 3, 3]);
 });
+
+test("Should correctly solve the hospital-resident matching", () => {
+  const hr = HospitalResident.generate(12, 4, 12345678);
+  const [mResidents, mHospitals] = hr.solve();
+
+  expect(mResidents).toEqual([2, 0, 3, 1, 2, 1, 0, 3, 0, 2, 1, 3]);
+  expect(mHospitals).toEqual([
+    [6, 8, 1],
+    [10, 5, 3],
+    [9, 0, 4],
+    [7, 2, 11],
+  ]);
+});

@@ -64,4 +64,73 @@ export class HospitalResident {
     hr.init_random(numResidents, numHospitals, seed)
     return hr;
   }
+
+  // Solve the HR instance
+  solve(): [number[], number[][]] {
+    // Ranks of residents, for each hospital
+    const hospitalRanks: number[][] = Array.from(
+      { length: this.numHospitals },
+      () => Array(this.numResidents).fill(-1)
+    );
+    for (let h = 0; h < this.numHospitals; h++) {
+      for (let k = 0; k < this.hospitalPrefs[h].length; k++) {
+        const r = this.hospitalPrefs[h][k];
+        hospitalRanks[h][r] = k;
+      }
+    }
+
+    // Head indices for each resident
+    const residentHead: number[] = Array(this.numResidents).fill(0);
+
+    // Solution (matching)
+    const mResidents: number[] = Array(this.numResidents).fill(-1);
+    const mHospitals: number[][] = Array.from({ length: this.numHospitals }, () => []);
+
+    // free_residents = deque(range(num_residents))
+    const freeResidents: number[] = Array.from({ length: this.numResidents }, (_, i) => i);
+    let qHead = 0;  // O(1) alternative to deque.popleft()
+
+    while (qHead < freeResidents.length) {
+      // Pick a free resident r
+      const r = freeResidents[qHead++];
+
+      // Pick a hospital that is the best available for the resident r
+      if (residentHead[r] >= this.residentPrefs[r].length) continue;
+      const h = this.residentPrefs[r][residentHead[r]];
+      residentHead[r] += 1;
+
+      // Match the resident r to the hospital h
+      mResidents[r] = h;
+
+      // Temporarily add the resident to the list of the hospital (sorted by hospital preference)
+      insertByHospitalPreference(mHospitals[h], hospitalRanks[h], r);
+
+      // If the applicants exceeds the capacity, remove the worst
+      if (mHospitals[h].length > this.capacities[h]) {
+        const rWorst = mHospitals[h].pop()!;  // assuming the insertion keeps the worst-ranked element at the end
+        mResidents[rWorst] = -1;
+        freeResidents.push(rWorst);
+      }
+    }
+
+    return [mResidents, mHospitals];
+  }
+}
+
+/**
+ * Inserts a resident into the list in order of the hospital's preference
+ * (i.e., smaller rank values are preferred).
+ * The list is maintained so that the last element is the worst-ranked resident.
+ */
+function insertByHospitalPreference(
+  list: number[],
+  rank: number[],
+  resident: number
+): void {
+  const rRank = rank[resident];
+
+  // Simple linear insertion (can be replaced with binary search if needed)
+  let i = 0;
+  while (i < list.length && rank[list[i]] <= rRank) i++;
+  list.splice(i, 0, resident);
 }
