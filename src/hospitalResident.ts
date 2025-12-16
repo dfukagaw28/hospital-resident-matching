@@ -14,7 +14,7 @@ export class HospitalResident {
   }
 
   // Randomly initialize the instance
-  init_random(
+  initRandom(
     numResidents: number,
     numHospitals: number,
     seed: number
@@ -61,7 +61,7 @@ export class HospitalResident {
     seed: number
   ): HospitalResident {
     const hr = new HospitalResident();
-    hr.init_random(numResidents, numHospitals, seed)
+    hr.initRandom(numResidents, numHospitals, seed)
     return hr;
   }
 
