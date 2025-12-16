@@ -2,26 +2,25 @@
   "name": "simple-matching-ts",
   "version": "0.0.1",
   "type": "module",
-
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-
   "exports": {
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     }
   },
-
   "scripts": {
     "build": "tsc",
     "test": "bun test"
   },
-
   "devDependencies": {
     "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "reliable-random": "^0.0.1"
   }
 }
