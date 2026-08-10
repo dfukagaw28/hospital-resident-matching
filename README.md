@@ -85,11 +85,21 @@ interface MatchResult {
 }
 ```
 
-## Other
+## Random instance generation
 
-The `HospitalResident` class in `src/hospitalResident.ts` and the random number
-utilities in `src/rng.ts` are internal helpers used to generate random matching
-instances for tests and benchmarks. They are not part of the package's public API.
+`HospitalResident` generates a random Hospital/Resident matching instance
+(index-based, using a seeded PCG32 RNG) and solves it with the same
+deferred-acceptance algorithm as `stableMatch`. Useful for tests and benchmarks.
+
+```ts
+import { HospitalResident } from "simple-matching-ts";
+
+const hr = HospitalResident.generate(/* numResidents */ 100, /* numHospitals */ 10, /* seed */ 42);
+const [matchedHospitalOf, residentsOf] = hr.solve();
+```
+
+The random number utilities in `src/rng.ts` (`Pcg32Rng`, `permutation`, etc.) that
+back `HospitalResident` are internal and not part of the package's public API.
 
 ---
 
