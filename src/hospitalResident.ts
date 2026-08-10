@@ -1,6 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { Pcg32Rng, permutation } from "./rng";
+import { Pcg32Rng, permutation } from "./rng.js";
 
 export class HospitalResident {
   numResidents!: number;

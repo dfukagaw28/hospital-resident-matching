@@ -1,4 +1,4 @@
-import type { Resident, Hospital, MatchResult } from "./types";
+import type { Resident, Hospital, MatchResult } from "./types.js";
 
 export function stableMatch(
   residents: Resident[],
