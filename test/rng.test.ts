@@ -4,6 +4,7 @@ import {
   Pcg32Rng,
   nextInt,
   permutation,
+  permutations,
   type Rng,
 } from "../src/rng";
 
@@ -91,4 +92,24 @@ test("permutation() returns a permutation of [0, 1, ..., n-1] (MathRng version)"
   const perm = permutation(rng, n);
 
   expect(isPermutation(perm, n)).toBe(true);
+});
+
+test("permutations draws the same sequence as repeated permutation calls", () => {
+  const bulk = permutations(new Pcg32Rng(2468), 5, 7);
+
+  const oneByOne = new Pcg32Rng(2468);
+  expect(bulk).toEqual(Array.from({ length: 5 }, () => permutation(oneByOne, 7)));
+
+  // A permutation of nothing consumes nothing
+  const rng = new Pcg32Rng(1);
+  expect(permutations(rng, 3, 1)).toEqual([[0], [0], [0]]);
+  expect(rng.nextUint32()).toBe(new Pcg32Rng(1).nextUint32());
+});
+
+test("nextUint32Bulk draws the same sequence as repeated nextUint32 calls", () => {
+  const bulk = new Pcg32Rng(99).nextUint32Bulk(4);
+
+  const oneByOne = new Pcg32Rng(99);
+  expect(bulk).toEqual(Array.from({ length: 4 }, () => oneByOne.nextUint32()));
+  expect(new Pcg32Rng(99).nextUint32Bulk(0)).toEqual([]);
 });

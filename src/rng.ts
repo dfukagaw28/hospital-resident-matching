@@ -29,7 +29,7 @@ export class Pcg32Rng implements Rng {
   }
 
   /** 32bit の乱数 */
-  private nextUint32(): number {
+  nextUint32(): number {
     const oldstate = this.state;
     this.state = (oldstate * MULTIPLIER + this.inc) & MASK_64;
 
@@ -46,6 +46,11 @@ export class Pcg32Rng implements Rng {
   nextFloat(): number {
     // [0,1)
     return this.nextUint32() / 0x100000000;
+  }
+
+  /** 32bit の乱数を count 個 (nextUint32() を count 回呼ぶのと等価) */
+  nextUint32Bulk(count: number): number[] {
+    return Array.from({ length: count }, () => this.nextUint32());
   }
 }
 
@@ -64,4 +69,12 @@ export function permutation(rng: Rng, n: number): number[] {
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
+}
+
+/**
+ * 0..n-1 のランダム順列を count 個生成する
+ * (permutation() を count 回呼ぶのと等価)
+ */
+export function permutations(rng: Rng, count: number, n: number): number[][] {
+  return Array.from({ length: count }, () => permutation(rng, n));
 }
