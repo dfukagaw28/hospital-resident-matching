@@ -44,12 +44,28 @@ export class HospitalResident {
     this.setCapacities();    
   }
 
-  // Set the capacities for each hospital
-  setCapacities(capacities: number = -1): void {
+  /**
+   * Set the capacities for each hospital.
+   *
+   * Pass a single number to give every hospital the same capacity (a negative
+   * value falls back to the default, evenly-divided capacity), or an array of
+   * length `numHospitals` to give each hospital its own capacity.
+   */
+  setCapacities(capacities: number | number[] = -1): void {
+    if (Array.isArray(capacities)) {
+      if (capacities.length !== this.numHospitals) {
+        throw new Error(
+          `Expected ${this.numHospitals} capacities, got ${capacities.length}`
+        );
+      }
+      this.capacities = [...capacities];
+      return;
+    }
+
     if (capacities < 0) {
       capacities = 1 + Math.floor((this.numResidents - 1) / this.numHospitals);
     }
-    this.capacities = Array(this.numHospitals).fill(capacities);
+    this.capacities = new Array<number>(this.numHospitals).fill(capacities);
   }
 
   // Generate a random instance

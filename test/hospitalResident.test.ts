@@ -77,3 +77,18 @@ test("Should correctly solve the hospital-resident matching", () => {
     [7, 2, 11],
   ]);
 });
+
+// The expected values below come from the Python version
+// (dfukagaw28/simple_matching_python), which this package matches seed for seed.
+
+test("setCapacities accepts a uniform capacity and a per-hospital one", () => {
+  const hr = HospitalResident.generate(50, 7, 7);
+
+  hr.setCapacities(3);
+  expect(hr.capacities).toEqual([3, 3, 3, 3, 3, 3, 3]);
+
+  hr.setCapacities([1, 2, 3, 4, 5, 6, 7]);
+  expect(hr.capacities).toEqual([1, 2, 3, 4, 5, 6, 7]);
+
+  expect(() => hr.setCapacities([1, 2, 3])).toThrow();
+});
