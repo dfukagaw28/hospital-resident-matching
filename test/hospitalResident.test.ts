@@ -91,6 +91,26 @@ test("setCapacities accepts a uniform capacity and a per-hospital one", () => {
   expect(hr.capacities).toEqual([1, 2, 3, 4, 5, 6, 7]);
 
   expect(() => hr.setCapacities([1, 2, 3])).toThrow();
+  expect(() => hr.setCapacities(3, true)).toThrow();
+});
+
+test("tight capacities seat exactly the residents, the popular hospitals first", () => {
+  const spread = HospitalResident.generate(31, 6, 5);
+  spread.setCapacities(-1, true);
+  expect(spread.capacities).toEqual([6, 5, 5, 5, 5, 5]);
+
+  const larger = HospitalResident.generate(100, 7, 42);
+  larger.setCapacities(-1, true);
+  expect(larger.capacities).toEqual([15, 14, 14, 15, 14, 14, 14]);
+
+  // An even split leaves no spare seat to hand out
+  const even = HospitalResident.generate(12, 4, 12345678);
+  even.setCapacities(-1, true);
+  expect(even.capacities).toEqual([3, 3, 3, 3]);
+
+  for (const hr of [spread, larger, even]) {
+    expect(hr.capacities.reduce((sum, c) => sum + c, 0)).toBe(hr.numResidents);
+  }
 });
 
 test("cutResidentPrefences keeps the top k hospitals and drops the rest", () => {

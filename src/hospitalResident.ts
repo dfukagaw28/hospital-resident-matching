@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 
 import { Pcg32Rng, permutations } from "./rng.js";
+import { compareKeys, popularityKeys } from "./utils.js";
 
 /** How the hospitals tied at the last rank are put in an order. */
 export type TieBreak = "random" | "keep";
@@ -72,8 +73,39 @@ export class HospitalResident {
    * Pass a single number to give every hospital the same capacity (a negative
    * value falls back to the default, evenly-divided capacity), or an array of
    * length `numHospitals` to give each hospital its own capacity.
+   *
+   * The default capacity rounds up, so that the hospitals hold a few more
+   * residents than there are.  Pass `tight` instead (and no capacity of your
+   * own) to have them hold exactly `numResidents` residents: every hospital
+   * gets `floor(numResidents / numHospitals)` seats, and the seats left over
+   * go, one each, to the hospitals that the most residents rank first (then
+   * second, and so on; see `popularityKeys`), ties broken at random.  The
+   * lists the popularity is counted in are the submitted ones, so a hospital
+   * no resident lists gets a spare seat by luck only.
    */
-  setCapacities(capacities: number | number[] = -1): void {
+  setCapacities(capacities: number | number[] = -1, tight = false): void {
+    if (tight) {
+      if (capacities !== -1) {
+        throw new Error("Cannot specify both 'capacities' and 'tight'");
+      }
+
+      const base = Math.floor(this.numResidents / this.numHospitals);
+      const spare = this.numResidents - this.numHospitals * base;
+      const seats = new Array<number>(this.numHospitals).fill(base);
+
+      if (spare > 0) {
+        const hospitalKeys = popularityKeys(this.residentPrefs, this.numHospitals);
+        const randomKeys = this.getRng().nextUint32Bulk(this.numHospitals);
+        const sortedHospitals = Array.from({ length: this.numHospitals }, (_, h) => h).sort(
+          (a, b) => compareKeys(hospitalKeys[a]!, hospitalKeys[b]!) || randomKeys[a]! - randomKeys[b]!
+        );
+        for (let i = 0; i < spare; i++) seats[sortedHospitals[i]!] += 1;
+      }
+
+      this.capacities = seats;
+      return;
+    }
+
     if (Array.isArray(capacities)) {
       if (capacities.length !== this.numHospitals) {
         throw new Error(
