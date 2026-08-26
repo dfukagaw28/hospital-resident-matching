@@ -1,3 +1,6 @@
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname } from "node:path";
+
 import { Pcg32Rng, permutations } from "./rng.js";
 
 /** How the hospitals tied at the last rank are put in an order. */
@@ -231,6 +234,111 @@ export class HospitalResident {
     return hr;
   }
 
+  /** Print the instance. */
+  show(): void {
+    console.log("Residents:", this.numResidents);
+    console.log("Hospitals:", this.numHospitals);
+
+    for (let r = 0; r < this.numResidents; r++) {
+      const prefs = `[${this.residentPrefs[r]!.join(", ")}]`;
+      if (this.tieLast) {
+        console.log(`${r}:`, prefs, "(", ...this.residentPrefsRest![r]!, ")");
+      } else {
+        console.log(`${r}:`, prefs);
+      }
+    }
+
+    for (let h = 0; h < this.numHospitals; h++) {
+      console.log(`${h}:`, `[${this.hospitalPrefs[h]!.join(", ")}]`);
+    }
+  }
+
+  /**
+   * The instance as the text of an instance file (see `save`).
+   *
+   * `timestamp` heads the file as a comment; the current time is stamped
+   * without one.
+   */
+  toText(timestamp?: string): string {
+    const stamp = timestamp ?? formatTimestamp(new Date());
+
+    const lines = [`# ${stamp}`, `# seed: ${this.seed}`];
+    lines.push(`HR ${this.numResidents} ${this.numHospitals}`);
+    for (const prefs of this.residentPrefs) lines.push(prefs.join(" "));
+    for (const prefs of this.hospitalPrefs) lines.push(prefs.join(" "));
+
+    return lines.join("\n") + "\n";
+  }
+
+  /**
+   * Save the instance to a file.
+   *
+   * The preference lists are saved as they are, i.e. an incomplete list is
+   * saved incomplete.  Note that neither the `tieLast` flag nor the tie-broken
+   * order of the hospitals out of the lists is saved; call `setTieLast()` again
+   * after loading.
+   */
+  save(path: string): void {
+    // Make sure that the parent directory exists
+    mkdirSync(dirname(path), { recursive: true });
+
+    // Do not overwrite
+    if (existsSync(path)) throw new Error(`Refusing to overwrite ${path}`);
+
+    writeFileSync(path, this.toText());
+  }
+
+  /**
+   * Read an instance from the text of an instance file.
+   *
+   * A preference list of a resident may be incomplete, in which case the
+   * hospitals out of the list are unacceptable; call `setTieLast()` to make
+   * them acceptable and tied at the last rank instead.
+   */
+  static fromText(text: string): HospitalResident {
+    // New instance (which is empty)
+    const instance = new HospitalResident();
+
+    // Lines that are neither empty nor a comment
+    const lines = text
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0 && line[0] !== "#");
+
+    let cursor = 0;
+    const nextLine = (): string => {
+      if (cursor >= lines.length) throw new Error("Unexpected end of the instance");
+      return lines[cursor++]!;
+    };
+    const nextNumbers = (): number[] => nextLine().split(/\s+/).map(Number);
+
+    // Header
+    const header = nextLine();
+    if (!header.startsWith("HR ")) throw new Error(`Header excepted, found: ${header}`);
+    const [numResidents, numHospitals] = header.slice(3).trim().split(/\s+/).map(Number) as [
+      number,
+      number,
+    ];
+    instance.numResidents = numResidents;
+    instance.numHospitals = numHospitals;
+
+    // Preference list (resident -> hospital)
+    instance.residentPrefs = Array.from({ length: numResidents }, nextNumbers);
+
+    // Preference list (hospital -> resident)
+    instance.hospitalPrefs = Array.from({ length: numHospitals }, nextNumbers);
+
+    // Set capacities for each hospital
+    instance.setCapacities();
+
+    return instance;
+  }
+
+  /** Load an instance from a file (see `fromText`). */
+  static load(path: string): HospitalResident {
+    return HospitalResident.fromText(readFileSync(path, "utf8"));
+  }
+
   // Solve the HR instance
   solve(): [number[], number[][]] {
     // Parameters
@@ -286,6 +394,14 @@ export class HospitalResident {
     return [mResidents, mHospitals];
   }
 
+  /** Transform the instance to that of https://pypi.org/project/matching/ */
+  toDicts(): [Record<number, number[]>, Record<number, number[]>, Record<number, number>] {
+    return [
+      { ...this.residentPrefsCompleted() },
+      { ...this.hospitalPrefs },
+      { ...this.capacities },
+    ];
+  }
 }
 
 /**
@@ -300,4 +416,13 @@ function insertByHospitalPreference(list: number[], rank: number[], resident: nu
   let i = list.length;
   while (i > 0 && rank[list[i - 1]!]! >= rRank) i--;
   list.splice(i, 0, resident);
+}
+
+/** A timestamp as `datetime.now().strftime('%Y%m%d%H%M%S')` writes one. */
+export function formatTimestamp(when: Date): string {
+  const pad = (value: number, width = 2) => String(value).padStart(width, "0");
+  return (
+    `${pad(when.getFullYear(), 4)}${pad(when.getMonth() + 1)}${pad(when.getDate())}` +
+    `${pad(when.getHours())}${pad(when.getMinutes())}${pad(when.getSeconds())}`
+  );
 }

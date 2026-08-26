@@ -187,3 +187,35 @@ test("a seeded tie break does not depend on the instance's own generator", () =>
 
   expect(second.residentPrefsRest).toEqual(first.residentPrefsRest);
 });
+
+test("an instance survives a round trip through the file format", () => {
+  const hr = HospitalResident.generate(8, 3, 99);
+
+  const text = hr.toText("20260101000000");
+  expect(text).toBe(
+    "# 20260101000000\n# seed: 99\n" +
+      "HR 8 3\n0 2 1\n0 2 1\n2 0 1\n0 2 1\n2 0 1\n1 0 2\n0 2 1\n2 0 1\n" +
+      "3 4 7 1 6 5 0 2\n4 5 1 2 0 3 7 6\n7 2 3 6 0 1 5 4\n"
+  );
+
+  const loaded = HospitalResident.fromText(text);
+  expect(loaded.numResidents).toBe(8);
+  expect(loaded.numHospitals).toBe(3);
+  expect(loaded.residentPrefs).toEqual(hr.residentPrefs);
+  expect(loaded.hospitalPrefs).toEqual(hr.hospitalPrefs);
+  expect(loaded.capacities).toEqual(hr.capacities);
+  expect(loaded.solve()).toEqual(hr.solve());
+
+  // Comments and blank lines are skipped
+  expect(HospitalResident.fromText(`\n# a comment\n${text}`).solve()).toEqual(hr.solve());
+  expect(() => HospitalResident.fromText("nonsense\n")).toThrow();
+});
+
+test("toDicts lays the instance out as the `matching` package wants it", () => {
+  const hr = HospitalResident.generate(8, 3, 99);
+  const [residents, hospitals, capacities] = hr.toDicts();
+
+  expect(residents[0]).toEqual(hr.residentPrefs[0]!);
+  expect(hospitals[2]).toEqual(hr.hospitalPrefs[2]!);
+  expect(capacities).toEqual({ 0: 3, 1: 3, 2: 3 });
+});
