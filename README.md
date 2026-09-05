@@ -269,6 +269,23 @@ matched to a hospital of their (cut) preference list. Without `--tie-last` such 
 resident is left unmatched; with `--tie-last` they may be matched to a hospital
 out of their list instead.
 
+## Web example
+
+`examples/web` is a single-page front-end that generates instances and solves
+them in the browser, built with Vite:
+
+```bash
+npm run build                # emits dist/, which the example imports
+cd examples/web && npm install && npm run dev
+```
+
+The library is plain ES modules with no runtime dependency, so a bundler pulls
+it in as it is. The one thing to watch for is that `save()` and `load()` take
+file paths, so `node:fs` and `node:path` are imported at the top of
+`hospitalResident.ts`; a browser build has to alias them away (the example
+points them at a stub that throws) and use `toText()` / `fromText()` instead.
+See [examples/web/README.md](examples/web/README.md).
+
 ## Compatibility with the Python version
 
 Given the same seed, this package and the Python version produce the same

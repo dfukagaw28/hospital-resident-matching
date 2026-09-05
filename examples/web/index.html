@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>simple-matching-ts web example</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <h1>Hospital / Resident matching</h1>
+      <p>
+        <code>simple-matching-ts</code> をブラウザから呼び出し、安定マッチング
+        (resident-oriented Gale-Shapley) を解くサンプルです。
+      </p>
+    </header>
+
+    <main class="layout">
+      <form id="controls" class="panel">
+        <h2>インスタンス</h2>
+
+        <label>
+          生成方法
+          <select id="mode">
+            <option value="uniform">一様ランダム (initRandom)</option>
+            <option value="biased">相関のある選好 (generateBiasedHR)</option>
+          </select>
+        </label>
+
+        <div class="row">
+          <label>
+            研修医の数
+            <input id="numResidents" type="number" min="1" max="2000" value="20" />
+          </label>
+          <label>
+            病院の数
+            <input id="numHospitals" type="number" min="1" max="500" value="5" />
+          </label>
+        </div>
+
+        <label>
+          シード <span class="hint">空欄ならランダム</span>
+          <input id="seed" type="number" min="0" placeholder="random" value="20260905" />
+        </label>
+
+        <fieldset class="biased-only">
+          <legend>選好の相関 (alpha)</legend>
+          <label>
+            研修医どうしの一致度 <output id="alphaResidentOut">0.50</output>
+            <input id="alphaResident" type="range" min="0" max="1" step="0.05" value="0.5" />
+          </label>
+          <label>
+            病院どうしの一致度 <output id="alphaHospitalOut">0.50</output>
+            <input id="alphaHospital" type="range" min="0" max="1" step="0.05" value="0.5" />
+          </label>
+        </fieldset>
+
+        <h2>定員</h2>
+        <label>
+          割り当て方
+          <select id="capacityMode">
+            <option value="auto">自動 (切り上げ)</option>
+            <option value="tight">ちょうど定員 = 研修医数 (tight)</option>
+            <option value="uniform">全病院に同じ定員</option>
+          </select>
+        </label>
+        <label class="capacity-value-only">
+          定員
+          <input id="capacityValue" type="number" min="1" max="1000" value="4" />
+        </label>
+
+        <h2>希望順位表</h2>
+        <label>
+          提出する希望の数 <span class="hint">0 なら全病院</span>
+          <input id="listLength" type="number" min="0" max="500" value="3" />
+        </label>
+        <label class="checkbox">
+          <input id="tieLast" type="checkbox" />
+          リスト外の病院も受け入れ可 (最下位タイ / tieLast)
+        </label>
+        <label class="tie-break-only">
+          タイの崩し方
+          <select id="tieBreak">
+            <option value="random">random (ランダムに並べ替える)</option>
+            <option value="keep">keep (元の順序を保つ)</option>
+          </select>
+        </label>
+
+        <div class="actions">
+          <button type="submit" class="primary">生成して解く</button>
+          <button type="button" id="normalize">正規化 (normalize)</button>
+        </div>
+
+        <p id="error" class="error" hidden></p>
+      </form>
+
+      <section class="panel results">
+        <h2>結果</h2>
+        <dl id="stats" class="stats"></dl>
+
+        <div class="tables">
+          <div class="table-wrap">
+            <h3>研修医</h3>
+            <table id="residentTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>希望順位</th>
+                  <th>配属先</th>
+                  <th>順位</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="table-wrap">
+            <h3>病院</h3>
+            <table id="hospitalTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>定員</th>
+                  <th>充足</th>
+                  <th>配属された研修医</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <details class="instance-text">
+          <summary>インスタンスのテキスト (toText / fromText)</summary>
+          <textarea id="instanceText" spellcheck="false" rows="12"></textarea>
+          <div class="actions">
+            <button type="button" id="loadText">このテキストを読み込んで解く</button>
+            <button type="button" id="download">ダウンロード</button>
+          </div>
+        </details>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
