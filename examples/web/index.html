@@ -7,6 +7,16 @@
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
+    <!-- Shown until main.ts runs, i.e. when the page is opened without Vite. -->
+    <div id="boot" class="boot">
+      <b>スクリプトが読み込まれていません。</b>
+      このページは TypeScript のまま <code>/src/main.ts</code> を読み込むので、Vite の開発
+      サーバー経由でしか動きません。<code>examples/web</code> で <code>npm run dev</code> を
+      実行して表示された URL を開いてください。静的サーバーで配信したい場合は
+      <code>npm run build</code> でバンドルしてから <code>npm run preview</code>
+      （あるいは <code>dist/</code> をそのまま配信）してください。
+    </div>
+
     <header class="page-header">
       <h1>Hospital / Resident matching</h1>
       <p>

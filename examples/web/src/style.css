@@ -305,3 +305,18 @@ textarea {
   font-size: 12px;
   resize: vertical;
 }
+
+.boot {
+  max-width: 1200px;
+  margin: 0 auto 20px;
+  padding: 12px 14px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-left: 4px solid var(--danger);
+  border-radius: 8px;
+  color: var(--danger);
+}
+
+.boot code {
+  background: #ffedd5;
+}

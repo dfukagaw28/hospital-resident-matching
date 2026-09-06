@@ -279,6 +279,11 @@ npm run build                # emits dist/, which the example imports
 cd examples/web && npm install && npm run dev
 ```
 
+The page loads `src/main.ts` as it is and lets Vite compile it, so it has to be
+opened through `npm run dev`; a plain static server hands the browser a `.ts`
+file it refuses to run. Use `npm run build && npm run preview` to serve it as a
+bundle instead.
+
 The library is plain ES modules with no runtime dependency, so a bundler pulls
 it in as it is. The one thing to watch for is that `save()` and `load()` take
 file paths, so `node:fs` and `node:path` are imported at the top of

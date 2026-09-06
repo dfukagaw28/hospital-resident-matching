@@ -268,5 +268,8 @@ function syncFormVisibility(): void {
 form.addEventListener("input", syncFormVisibility);
 syncFormVisibility();
 
+// The module is running, so the "open me through Vite" banner can go
+el<HTMLDivElement>("boot").hidden = true;
+
 // Solve one instance right away, so the page is not empty
 run(() => solveAndRender(buildInstance(readSettings())));

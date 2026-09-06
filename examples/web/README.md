@@ -22,6 +22,15 @@ npm run dev   # http://localhost:5173
 `npm run build` type-checks the page and bundles it into `dist/`, and
 `npm run preview` serves that bundle.
 
+> **`index.html` を静的サーバーで直接開かないでください。**
+> このページは `<script type="module" src="/src/main.ts">` で TypeScript を
+> そのまま読み込み、Vite に変換させています。`python3 -m http.server` や
+> VS Code の Live Server などで開くと、`.ts` が JavaScript として配信されず
+> `Failed to load module script: ... MIME type of "text/vnd.trolltech.linguist"`
+> で止まります。素の静的サーバーで配信したいときは `npm run build` で
+> `dist/` にバンドルしてから、その `dist/` を配信してください
+> (`npm run preview` がそれをします)。
+
 ## What it shows
 
 - **`HospitalResident.generate()`** — a uniformly random instance from a seed,
