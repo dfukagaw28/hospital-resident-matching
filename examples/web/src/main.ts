@@ -1,5 +1,5 @@
 /**
- * A small web front-end for `simple-matching-ts`.
+ * A small web front-end for `hospital-resident-matching`.
  *
  * The library is plain ES modules with no runtime dependency, so a bundler
  * (here Vite) can pull it straight into the browser: this file only reads the
@@ -11,7 +11,7 @@ import {
   generateBiasedHR,
   normalize,
   type TieBreak,
-} from "simple-matching-ts";
+} from "hospital-resident-matching";
 
 /* ------------------------------------------------------------------ */
 /* The form                                                            */

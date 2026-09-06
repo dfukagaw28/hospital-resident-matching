@@ -1,27 +1,58 @@
 {
-  "name": "simple-matching-ts",
-  "version": "0.0.1",
+  "name": "hospital-resident-matching",
+  "version": "0.1.0",
+  "description": "Stable matching for the Hospital/Resident problem: a resident-oriented Gale-Shapley solver and a seeded instance generator that reproduces its Python original seed for seed.",
+  "keywords": [
+    "matching",
+    "stable-matching",
+    "stable-marriage",
+    "hospital-resident",
+    "gale-shapley",
+    "deferred-acceptance",
+    "assignment",
+    "algorithm"
+  ],
+  "license": "MIT",
+  "author": "Daiji Fukagawa",
+  "homepage": "https://github.com/dfukagaw28/simple-matching-ts#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dfukagaw28/simple-matching-ts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dfukagaw28/simple-matching-ts/issues"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "hr-match": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "THIRD-PARTY-NOTICES.md"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
   },
   "scripts": {
     "build": "tsc",
     "test": "bun test",
-    "cli": "bun run src/cli.ts"
+    "cli": "bun run src/cli.ts",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
+    "@types/bun": "latest",
     "typescript": "^5"
-  },
-  "bin": {
-    "simple-matching": "./dist/cli.js"
   }
 }

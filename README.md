@@ -1,4 +1,4 @@
-# simple-matching-ts
+# hospital-resident-matching
 
 A TypeScript library implementing the stable matching algorithm.
 It solves the Hospital/Resident problem (many-to-one matching), known from
@@ -14,27 +14,25 @@ included (see [Compatibility with the Python version](#compatibility-with-the-py
 ## Install
 
 ```bash
+npm install hospital-resident-matching
+```
+
+The package is ESM only and ships its own type declarations. It has no runtime
+dependency, so a bundler pulls it straight into the browser as well (see
+[Web example](#web-example)).
+
+## Develop
+
+```bash
 bun install
-```
-
-## Build
-
-```bash
-bun run build
-```
-
-Compiles `src/` into `dist/` using `tsc`.
-
-## Test
-
-```bash
+bun run build   # compiles src/ into dist/ using tsc
 bun test
 ```
 
 ## Usage
 
 ```ts
-import { stableMatch, type Resident, type Hospital } from "simple-matching-ts";
+import { stableMatch, type Resident, type Hospital } from "hospital-resident-matching";
 
 const residents: Resident[] = [
   { id: "r1", preferences: ["h1", "h2"] }, // prefers h1 most
@@ -95,7 +93,7 @@ interface MatchResult {
 deferred-acceptance algorithm as `stableMatch`.
 
 ```ts
-import { HospitalResident } from "simple-matching-ts";
+import { HospitalResident } from "hospital-resident-matching";
 
 const hr = HospitalResident.generate(/* numResidents */ 300, /* numHospitals */ 20, /* seed */ 12345);
 const [mResidents, mHospitals] = hr.solve();
@@ -195,7 +193,7 @@ residents agree with each other on how good the hospitals are, and the hospitals
 on how good the residents are.
 
 ```ts
-import { generateBiasedHR } from "simple-matching-ts";
+import { generateBiasedHR } from "hospital-resident-matching";
 
 const hr = generateBiasedHR(300, 24, {
   alphaResident: 0.5,
@@ -227,7 +225,7 @@ average over the instances (a single instance varies widely around it).
 popularity, in place, which makes an instance easier to read.
 
 ```ts
-import { HospitalResident, normalize } from "simple-matching-ts";
+import { HospitalResident, normalize } from "hospital-resident-matching";
 
 const hr = HospitalResident.generate(300, 24, 12345);
 const [residentOrder, hospitalOrder] = normalize(hr);
@@ -249,8 +247,11 @@ bun run cli solve instances/HR_r300_h020_s05685763110016471008.txt
 bun run cli simulate 100 10 20 -v -r 1000   # writes ./result_R100_H10_<timestamp>.csv
 ```
 
-After `bun run build` the same commands are available as the `simple-matching`
-binary (`node dist/cli.js ...`).
+Installed from npm, the same commands are available as the `hr-match` binary:
+
+```bash
+npx -p hospital-resident-matching hr-match generate 300 20
+```
 
 `simulate NUM_RESIDENTS NUM_HOSPITALS CAPACITY_MAX` sweeps the capacity of the
 hospitals from `CAPACITY_MIN` (the smallest integer no less than
@@ -304,7 +305,7 @@ Those pieces are exported as well, should you want a NumPy-compatible stream of
 your own:
 
 ```ts
-import { numpyDefaultRng, Pcg32Rng, permutation } from "simple-matching-ts";
+import { numpyDefaultRng, Pcg32Rng, permutation } from "hospital-resident-matching";
 
 const rng = numpyDefaultRng(12345);
 rng.normal(0, 1, 5);      // === np.random.default_rng(12345).normal(0, 1, 5)
@@ -318,3 +319,11 @@ item number; the scores are continuous, so a tie has probability zero.
 ---
 
 This project was created using `bun init` in bun v1.3.3. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
+
+The random number generation reproduces that of NumPy, whose ziggurat tables
+this package carries; NumPy's BSD-3-Clause licence is reproduced in
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).

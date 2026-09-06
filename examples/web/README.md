@@ -1,7 +1,7 @@
 # Web example
 
 A single-page front-end that generates Hospital/Resident instances and solves
-them with `simple-matching-ts`, entirely in the browser.
+them with `hospital-resident-matching`, entirely in the browser.
 
 ## Run it
 

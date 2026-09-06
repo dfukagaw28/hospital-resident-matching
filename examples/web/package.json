@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "simple-matching-ts": "file:../.."
+    "hospital-resident-matching": "file:../.."
   },
   "devDependencies": {
     "typescript": "^5",

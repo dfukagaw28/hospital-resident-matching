@@ -13,7 +13,7 @@ import { join } from "node:path";
 import { formatTimestamp, HospitalResident } from "./hospitalResident.js";
 import { numpyDefaultRng } from "./numpy/random.js";
 
-const USAGE = `Usage: simple-matching COMMAND [OPTIONS] ARGS...
+const USAGE = `Usage: hr-match COMMAND [OPTIONS] ARGS...
 
 Commands:
   generate NUM_RESIDENTS NUM_HOSPITALS
