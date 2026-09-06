@@ -14,13 +14,13 @@
   ],
   "license": "MIT",
   "author": "Daiji Fukagawa",
-  "homepage": "https://github.com/dfukagaw28/simple-matching-ts#readme",
+  "homepage": "https://github.com/dfukagaw28/hospital-resident-matching#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dfukagaw28/simple-matching-ts.git"
+    "url": "git+https://github.com/dfukagaw28/hospital-resident-matching.git"
   },
   "bugs": {
-    "url": "https://github.com/dfukagaw28/simple-matching-ts/issues"
+    "url": "https://github.com/dfukagaw28/hospital-resident-matching/issues"
   },
   "type": "module",
   "main": "./dist/index.js",
